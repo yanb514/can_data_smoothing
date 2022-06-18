@@ -131,7 +131,8 @@ if __name__ == '__main__':
     
     # read CSV files
     data_folder = os.path.join(os.getcwd(),"can_data")
-    csv_file = "2021-08-02-13-23-22_2T3W1RFV0MC103811_ego.csv"
+    # csv_file = "2021-08-02-13-23-22_2T3W1RFV0MC103811_ego.csv"
+    csv_file = "2021-08-02-14-21-13_2T3P1RFV2MW181087_ego.csv"
     t,y = get_meas_from_csv(os.path.join(data_folder, csv_file), maxrow = maxrow)
     N = int((len(y) + 3)/3)
     p = y[:N]
