@@ -11,7 +11,7 @@ For details of problem formulation please refer to the PDF (https://github.com/y
 - lam2: controls the penalty for acceleration error.  Make this higher if acceleration data is more trustworthy
 - lam3: controls jerk regularization.  Make this higher for smoother signals
 
-Note that there is a trade-off amongst data fitting and smoothing.
+Note that there is a trade-off between data fitting and smoothing.
 
 ### Results with different parameter choices
 lam1 = 1, lam2 = 10, lam3 = 10
