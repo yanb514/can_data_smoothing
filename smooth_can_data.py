@@ -98,7 +98,7 @@ def rectify_1d(y, lam1, lam2, lam3):
     return xhat, vhat, ahat, jhat
     
     
-def get_meas_from_csv(csv_file):
+def get_meas_from_csv(csv_file, maxrow = None):
     p = []
     v = []
     a = []
@@ -108,8 +108,8 @@ def get_meas_from_csv(csv_file):
         next(reader) # skip the header
         line = 0
         for row in reader:
-            # if line > 1000:
-            #     break
+            if maxrow and line > maxrow:
+                break
             t.append(float(row[0]))
             p.append(float(row[1]))
             v.append(float(row[4]))
