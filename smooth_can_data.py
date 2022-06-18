@@ -8,9 +8,8 @@ Created on Sat Jun 18 11:34:23 2022
 Given position, velocity and acceleration data from CAN bus, produce smooth and internally consistent dynamics
 Data in 10Hz, from csv files
 """
-import pandas as pd
-import numpy as np
-from cvxopt import matrix, solvers, sparse,spdiag,spmatrix
+
+from cvxopt import matrix, solvers, sparse, spmatrix
 import matplotlib.pyplot as plt
 import os
 import csv
