@@ -124,18 +124,20 @@ def get_meas_from_csv(csv_file):
 
 if __name__ == '__main__':
     
+    # set parameters
+    maxrow = None # specify number of rows to read in csv file, if none, read all rows
+    lam1 = 1 # speed regulation
+    lam2 = 10 # acceleration regulation
+    lam3 = 10000 # jerk regulation
+    
     # read CSV files
     data_folder = os.path.join(os.getcwd(),"can_data")
     csv_file = "2021-08-02-13-23-22_2T3W1RFV0MC103811_ego.csv"
-    t,y = get_meas_from_csv(os.path.join(data_folder, csv_file))
+    t,y = get_meas_from_csv(os.path.join(data_folder, csv_file), maxrow = maxrow)
     N = int((len(y) + 3)/3)
     p = y[:N]
     v = y[N:2*N-1]
     a = y[2*N-1:]
-    
-    lam1 = 1 # speed regulation
-    lam2 = 10 # acceleration regulation
-    lam3 = 10000 # jerk regulation
     
     # solve
     phat, vhat, ahat, jhat = rectify_1d(y, lam1, lam2, lam3)
@@ -148,8 +150,6 @@ if __name__ == '__main__':
     axs[0].set_xlabel("time (s)")
     axs[0].set_ylabel("m")
     axs[0].legend()
-    # axs[0].set_xticks(np.arange(t[0], t[-1], 100))
-    # axs[0].set_xticklabels(np.arange(t[0], t[-1], 100)/10)
     
     axs[1].scatter(t[:-1], v, s=0.5, label = "raw")
     axs[1].plot(t[:-1], vhat, c="r", label = "smoothed")
