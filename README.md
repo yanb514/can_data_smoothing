@@ -1,10 +1,17 @@
 # can_data_smoothing
 
 This repository provides a tool for smoothing CAN bus data, incluing position, velocity and acceleration, while preserving internal consistency.
-For details of problem formulation please refer to the PDF [].
+For details of problem formulation please refer to the PDF (https://github.com/yanb514/can_data_smoothing/blob/main/can_bus_smoothing_doc.pdf).
 
 ### Requirement
 - CVXOPT: https://cvxopt.org/userguide/index.html
+
+### Tuning parameters
+- lam1: controls the penalty for velocity error. Make this higher if velocity data is more trustworthy
+- lam2: controls the penalty for acceleration error.  Make this higher if acceleration data is more trustworthy
+- lam3: controls jerk regularization.  Make this higher for smoother signals
+
+Note that there is a trade-off between data fitting and smoothing.
 
 ### Results with different parameter choices
 lam1 = 1, lam2 = 10, lam3 = 10
