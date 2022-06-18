@@ -3,4 +3,4 @@
 
 
 
-![lam1 = 1, lam2 = 10, lam3 = 10]([https://myoctocat.com/assets/images/base-octocat.svg](https://github.com/yanb514/can_data_smoothing/blob/main/figures/1_10_10.png))
+![lam1 = 1, lam2 = 10, lam3 = 10](https://github.com/yanb514/can_data_smoothing/blob/main/figures/1_10_10.png)
