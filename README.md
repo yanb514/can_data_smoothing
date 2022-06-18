@@ -1,7 +1,7 @@
 # can_data_smoothing
 
 This repository provides a tool for smoothing CAN bus data, incluing position, velocity and acceleration, while preserving internal consistency.
-For details of problem formulation please refer to the PDF ![](https://github.com/yanb514/can_data_smoothing/blob/main/can_bus_smoothing_doc.pdf).
+For details of problem formulation please refer to the PDF (https://github.com/yanb514/can_data_smoothing/blob/main/can_bus_smoothing_doc.pdf).
 
 ### Requirement
 - CVXOPT: https://cvxopt.org/userguide/index.html
