@@ -7,6 +7,7 @@ For details of problem formulation please refer to the PDF (https://github.com/y
 - CVXOPT: https://cvxopt.org/userguide/index.html
 
 ### Tuning parameters
+There are 3 parameters in smooth_can_data.py
 - lam1: controls the penalty for velocity error. Make this higher if velocity data is more trustworthy
 - lam2: controls the penalty for acceleration error.  Make this higher if acceleration data is more trustworthy
 - lam3: controls jerk regularization.  Make this higher for smoother signals
