@@ -17,7 +17,7 @@ Note that there is a trade-off between data fitting and smoothing.
 ### Results with different parameter choices
 Ego vehicle
 lam1 = 0, lam2 = 0, lam3 = 1
-![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/raw_0_0_1.png)
+![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/ego_0_0_1.png)
 
 Lead vehicle
 lam1 = 0, lam2 = 0, lam3 = 1
