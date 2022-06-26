@@ -15,22 +15,26 @@ There are 3 parameters in smooth_can_data.py
 Note that there is a trade-off between data fitting and smoothing.
 
 ### Results with different parameter choices
-lam1 = 1, lam2 = 10, lam3 = 10
-![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/1_10_10.png)
+Ego vehicle
+lam1 = 0, lam2 = 0, lam3 = 1
+![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/raw_0_0_1.png)
 
-lam1 = 1, lam2 = 10, lam3 = 100
-![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/1_10_100.png)
+Lead vehicle
+lam1 = 0, lam2 = 0, lam3 = 1
+![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/lead_0_0_1.png)
 
-lam1 = 1, lam2 = 10, lam3 = 1000
-![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/1_10_1000.png)
+Ego vehicle
+lam1 = 1, lam2 = 1, lam3 = 0
+![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/ego_1_1_0.png)
 
-lam1 = 1, lam2 = 10, lam3 = 10000
-![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/1_10_10000.png)
+Lead vehicle
+lam1 = 1, lam2 = 0, lam3 = 0
+![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/lead_1_0_0.png)
 
 ### This version handles
 - complete time series data, no missing data
 - uniform timestamps (e.g., 10Hz)
 - forward Euler numerical discretization method
-- measurement noise, no sparse outliers (otherwise, a L1 regularization is necessary)
+- measurement noise, no extreme outliers (otherwise, a L1 regularization is necessary)
 
 It is necessary to standardize the data into the above format before applying this smoother. Additional features can be made upon request.
