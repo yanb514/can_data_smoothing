@@ -215,9 +215,9 @@ if __name__ == '__main__':
     # set parameters
     minrow = 0
     maxrow = 2000 # specify number of rows to read in csv file, if none, read all rows
-    lam1 = 0 # speed regularization
-    lam2 = 0 # acceleration regularization
-    lam3 = 1 # jerk regularization
+    lam1 = 1 # speed regularization
+    lam2 = 1 # acceleration regularization
+    lam3 = 0 # jerk regularization
     chunk_num = 29 # to select car-following range in lead.csv
     
     #%% read CSV files
@@ -247,7 +247,7 @@ if __name__ == '__main__':
     phat, vhat, ahat, jhat = rectify_1d(y, lam1, lam2, lam3)
     
     # solve for leader
-    print("Smooth lead vehicle data")
+    print("Smooth lead vehicle data. Set lam2=0")
     yl = pl + vl[:-1] + al[:-2]
     plhat, vlhat, alhat, jlhat = rectify_1d(yl, lam1, 0, lam3)
     
