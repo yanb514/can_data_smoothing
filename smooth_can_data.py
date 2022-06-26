@@ -83,7 +83,7 @@ def rectify_1d(y, lam1, lam2, lam3):
     Q, p = _getQPMatrices(y, lam1, lam2, lam3)
     
     sol=solvers.qp(P=Q, q=p)
-    print(sol["status"])
+    print("Solver status: ", sol["status"])
     
     # extract result
     N = int((len(y) + 3)/3)
@@ -112,7 +112,7 @@ def get_meas_from_csv(csv_file, minrow = 0, maxrow = None):
         next(reader) # skip the header
         line = 0
         for row in reader:
-            if line < minrow:
+            if line < minrow: # skip current line
                 line += 1
                 continue
             if maxrow and line > maxrow:
@@ -123,13 +123,14 @@ def get_meas_from_csv(csv_file, minrow = 0, maxrow = None):
             a.append(float(row[5]))
             line += 1
       
-    y = p + v[:-1] + a[:-2]
-    return t, y
+    return p,v,a,t
 
 
 def get_meas_pair(csv_ego, csv_leader, chunk_num):
     '''
-    read for ego and leader.csv
+    read for ego and leader.csv given a chunk number
+    read leader first. Record the start and end timestamps for a certain chunk number
+    and then select ego data of the same time range
     '''
     pl = []
     vl = []
@@ -143,7 +144,7 @@ def get_meas_pair(csv_ego, csv_leader, chunk_num):
         line = 0
         for row in reader:
             if float(row[9]) == chunk_num:
-                start = min(float(row[0]), start)
+                start = min(float(row[0]), start) 
                 end = max(float(row[0]), end)
                 tl.append(float(row[0]))
                 pl.append(float(row[1]))
@@ -176,113 +177,91 @@ def get_meas_pair(csv_ego, csv_leader, chunk_num):
             a.append(float(row[5]))
             line += 1
      
-    
     # yl = pl + vl[:-1]  + al[:-2]
-    return [p,v,a,t], [pl,vl,al,tl]
+    return [t,p,v,a], [tl, pl,vl,al]
 
-def plot_compare(raw, smoothed):
-    '''
-    plot raw and smoothed data
-    '''
-    t,p,v,a = raw
-    t,phat,vhat,ahat = smoothed
 
-    f, axs = plt.subplots(1,4,figsize=(20,5))
-    axs[0].scatter(t[:len(p)], p, s=0.5, label = "raw")
-    axs[0].plot(t[:len(phat)], phat, c="r", label = "smoothed")
-    axs[0].set_title("position")
-    axs[0].set_xlabel("time (s)")
-    axs[0].set_ylabel("m")
-    axs[0].legend()
+def plot_compare(l1, l2, lgd1, lgd2):
+    '''
+    plot two lists (l1 and l2)
+    each list follows time, pos, velocity, accel, (jerk)
+    with legends lgd1 and lgd2
+    '''
     
-    axs[1].scatter(t[:len(v)], v, s=0.5, label = "raw")
-    axs[1].plot(t[:len(vhat)], vhat, c="r", label = "smoothed")
-    axs[1].set_title("speed")
-    axs[1].set_xlabel("time (s)")
-    axs[1].set_ylabel("m/s")
-    axs[1].legend()
+    n = len(l2)-1
+    f, axs = plt.subplots(1,n,figsize=(20,5))
+    titles = ["position", "speed", "acceleration", "jerk"]
+    units = ["m", "m/s", "m/s2", "m/s3"]
+
+    for i in range(n):
+        try:
+            axs[i].scatter(l1[0][:len(l1[i+1])], l1[i+1], s=0.5, label = lgd1)
+            axs[i].plot(l2[0][:len(l2[i+1])], l2[i+1], c="r", label = lgd2)
+            axs[i].set_title(titles[i])
+            axs[i].set_xlabel("time (s)")
+            axs[i].set_ylabel(units[i])
+            axs[i].legend()
+        except:
+            # pass
+            axs[i].plot(l2[0][:len(l2[i+1])], l2[i+1], c="r", label = lgd2)
+            axs[i].set_title(titles[i])
+            axs[i].set_xlabel("time (s)")
+            axs[i].set_ylabel(units[i])
+            axs[i].legend()
     
-    axs[2].scatter(t[:len(a)], a, s=0.5, label = "raw")
-    axs[2].plot(t[:len(ahat)], ahat, c="r", label = "smoothed")
-    axs[2].set_title("acceleration")
-    axs[2].set_xlabel("time (s)")
-    axs[2].set_ylabel("m/s2")
-    axs[2].legend()
-    
-    axs[3].plot(t[:len(jhat)], jhat, c="r", label = "smoothed")
-    axs[3].set_title("jerk")
-    axs[3].set_xlabel("time (s)")
-    axs[3].set_ylabel("m/s3")
 
 if __name__ == '__main__':
     
     # set parameters
-    minrow = 1000
+    minrow = 0
     maxrow = 2000 # specify number of rows to read in csv file, if none, read all rows
-    lam1 = 1000 # speed regulation
-    lam2 = 0 # acceleration regulation
-    lam3 = 100 # jerk regulation
+    lam1 = 0 # speed regularization
+    lam2 = 0 # acceleration regularization
+    lam3 = 1 # jerk regularization
+    chunk_num = 29 # to select car-following range in lead.csv
     
     #%% read CSV files
-    data_folder = os.path.join(os.getcwd(),"can_data")
-    csv_ego = "2021-08-02-13-23-22_2T3W1RFV0MC103811_ego.csv"
-    csv_leader = "2021-08-02-13-23-22_2T3W1RFV0MC103811_lead.csv"
+    data_folder = os.path.join(os.getcwd(),"can_data/VanderTest_files")
+    csv_ego = "2021-08-02-12-14-33_2T3P1RFV6LC082594_ego.csv"
+    csv_leader = "2021-08-02-12-14-33_2T3P1RFV6LC082594_lead.csv"
     
-    # t,y = get_meas_from_csv(os.path.join(data_folder, csv_file), minrow=minrow, maxrow = maxrow)
-    # N = int((len(y) + 3)/3)
-    # p = y[:N]
-    # v = y[N:2*N-1]
-    # a = y[2*N-1:]
+    # Read ego only
+    # p,v,a,t = get_meas_from_csv(os.path.join(data_folder, csv_leader), minrow=minrow, maxrow = maxrow)
     
+    # Read ego-leader pair given a chunk number
+    print("Read ego-leader data for chunk number {}".format(chunk_num))
     ego, lead = get_meas_pair(os.path.join(data_folder, csv_ego), 
                               os.path.join(data_folder, csv_leader), 
-                              chunk_num = 36)
-    p,v,a,t = ego
-    pl,vl,al,tl = lead
+                              chunk_num = chunk_num)
+    t, p,v,a = ego
+    tl, pl,vl,al = lead
     
-    # f, axs = plt.subplots(1,3,figsize=(20,5))
-    # axs[0].scatter(t, p, s=0.5, label = "ego")
-    # axs[0].plot(tl, pl, c="r", label = "lead")
-    # axs[0].set_title("position")
-    # axs[0].set_xlabel("time (s)")
-    # axs[0].set_ylabel("m")
-    # axs[0].legend()
-      
-    # axs[1].scatter(t, v, s=0.5, label = "ego")
-    # axs[1].plot(tl, vl, c="r", label = "lead")
-    # axs[1].set_title("speed")
-    # axs[1].set_xlabel("time (s)")
-    # axs[1].set_ylabel("m/s")
-    # axs[1].legend()
-    
-    # axs[2].scatter(t, a, s=0.5, label = "ego")
-    # axs[2].plot(tl, al, c="r", label = "lead")
-    # axs[2].set_title("acceleration")
-    # axs[2].set_xlabel("time (s)")
-    # axs[2].set_ylabel("m/s2")
-    # axs[2].legend()
+    # Plot ego-leader pair
+    plot_compare(ego, lead, "ego", "leader")
     
     
-    #%% solve
+    #%% solve (for ego and leader independently)
     # solve for ego
+    print("Smooth ego vehicle data")
     y = p + v[:-1] + a[:-2]
     phat, vhat, ahat, jhat = rectify_1d(y, lam1, lam2, lam3)
     
     # solve for leader
+    print("Smooth lead vehicle data")
     yl = pl + vl[:-1] + al[:-2]
     plhat, vlhat, alhat, jlhat = rectify_1d(yl, lam1, 0, lam3)
     
-    #%% plot
-    plot_compare([t,p,v,a], [t,phat,vhat,ahat])
-    plot_compare([tl,pl,vl,al], [tl,plhat,vlhat,alhat])
+    #%% plot raw vs. smoothed
+    plot_compare(ego, [t,phat,vhat,ahat,jhat], "raw_ego", "smoothed_ego")
+    plot_compare(lead, [tl,plhat,vlhat,alhat,jlhat], "raw_lead", "smoothed_lead")
     
     
-    #%%
+    #%% Compare position differentiation (GPS) with speed data (CAN)
     # dpdt = np.diff(p)/0.1
     # plt.figure()
     # plt.plot(t[:-1], dpdt, label="pos diff")
     # plt.plot(t, v, label= "speed meas")
-    # plt.ylim([27,34])
+    # plt.ylim([19,34])
     # plt.title("speed")
     # plt.xlabel("time (s)")
     # plt.ylabel("m/s")
