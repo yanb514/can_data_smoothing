@@ -24,15 +24,15 @@ lam1 = 0, lam2 = 0, lam3 = 1
 ![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/lead_0_0_1.png)
 
 Ego vehicle
-lam1 = 1, lam2 = 1, lam3 = 0
+lam1 = 1, lam2 = 1, lam3 = 0 (no jerk regularization)
 ![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/ego_1_1_0.png)
 
 Lead vehicle
-lam1 = 1, lam2 = 0, lam3 = 0
+lam1 = 1, lam2 = 0, lam3 = 0 (no jerk regularization)
 ![](https://github.com/yanb514/can_data_smoothing/blob/main/figures/lead_1_0_0.png)
 
 ### This version handles
-- complete time series data, no missing data
+- complete time series data, no missing data. Lead vehicle has incomplete acceleration data, therefore set lam2=0 for lead vehicle in order to ignore the acceleration term. Missing data can be incorporated in the formulation but a slight modification of ```_getQPMatrices()``` is required.
 - uniform timestamps (e.g., 10Hz)
 - forward Euler numerical discretization method
 - measurement noise, no extreme outliers (otherwise, a L1 regularization is necessary)
